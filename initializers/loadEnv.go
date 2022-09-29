@@ -2,6 +2,17 @@ package initializers
 
 import "github.com/spf13/viper"
 
+const (
+	POSTGRES_HOST     = "localhost"
+	POSTGRES_USER     = "postgres"
+	POSTGRES_PASSWORD = "1"
+	POSTGRES_DB       = "VCS_SMS"
+	POSTGRES_PORT     = "6000"
+	PORT              = "8000"
+
+	CLIENT_ORIGIN = "http://localhost:3000"
+)
+
 type Config struct {
 	DBHost         string `mapstructure:"POSTGRES_HOST"`
 	DBUserName     string `mapstructure:"POSTGRES_USER"`
