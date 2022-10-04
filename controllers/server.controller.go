@@ -14,8 +14,8 @@ type Server_controller struct {
 	DB *gorm.DB
 }
 
-func New_server_controller(DB *gorm.DB) *Server_controller {
-	return &Server_controller{DB}
+func New_server_controller(DB *gorm.DB) Server_controller {
+	return Server_controller{DB}
 }
 
 // create a new server

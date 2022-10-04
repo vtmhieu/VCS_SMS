@@ -9,8 +9,8 @@ type Server_Route_Controller struct {
 	servercontroller controllers.Server_controller
 }
 
-func New_route_server_controller(servercontroller controllers.Server_controller) *Server_Route_Controller {
-	return &Server_Route_Controller{servercontroller}
+func New_route_server_controller(servercontroller controllers.Server_controller) Server_Route_Controller {
+	return Server_Route_Controller{servercontroller}
 }
 
 func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
