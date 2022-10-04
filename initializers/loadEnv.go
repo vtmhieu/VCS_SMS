@@ -5,9 +5,9 @@ import "github.com/spf13/viper"
 const (
 	POSTGRES_HOST     = "localhost"
 	POSTGRES_USER     = "postgres"
-	POSTGRES_PASSWORD = "1"
+	POSTGRES_PASSWORD = "password123"
 	POSTGRES_DB       = "VCS_SMS"
-	POSTGRES_PORT     = "6000"
+	POSTGRES_PORT     = "6500"
 	PORT              = "8000"
 
 	CLIENT_ORIGIN = "http://localhost:3000"
