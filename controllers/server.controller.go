@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -30,6 +31,7 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 	now := time.Now()
 	var new_server models.Server
 	newServer := models.Server{
+		Server_id:    payload.Server_id,
 		Server_name:  payload.Server_name,
 		Status:       payload.Status,
 		Created_time: now,
@@ -100,11 +102,17 @@ func (sc *Server_controller) GetServer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "message": "server found", "data": foundServer})
 }
 
-//get al server
+//get all server
 
 func (sc *Server_controller) GetAllServer(ctx *gin.Context) {
+	var from = ctx.DefaultQuery("from", "1")
+	var to = ctx.DefaultQuery("to", "10000")
+
+	int_from, _ := strconv.Atoi(from)
+	int_to, _ := strconv.Atoi(to)
 	var Servers []models.Server
-	results := sc.DB.Offset(0).Find(&Servers)
+
+	results := sc.DB.Offset(int_from - 1).Limit(int_to - int_from + 1).Find(&Servers)
 
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "no connection"})
@@ -120,7 +128,7 @@ func (sc *Server_controller) DeleteServer(ctx *gin.Context) {
 
 	var Server_to_delete models.Server
 
-	result := sc.DB.Delete(&Server_to_delete, "server_id = ?", server_id)
+	result := sc.DB.Offset(0).Delete(&Server_to_delete, "server_id = ?", server_id)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad", "message": "no server id found."})
@@ -128,4 +136,17 @@ func (sc *Server_controller) DeleteServer(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"server_id": server_id, "status": "deleted"})
+}
+
+//delete all servers
+
+func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
+	var Servers []models.Server
+
+	results := sc.DB.Delete(&Servers)
+	if results.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": results.Error.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"results": "all data has been deleted successfully"})
 }

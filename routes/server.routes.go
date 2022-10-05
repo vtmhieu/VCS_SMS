@@ -20,4 +20,5 @@ func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	router.GET("/:server_id", c.servercontroller.GetServer)
 	router.GET("/", c.servercontroller.GetAllServer)
 	router.DELETE("/:server_id", c.servercontroller.DeleteServer)
+	router.DELETE("/", c.servercontroller.Delete_all_servers)
 }

@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Server struct {
-	Server_id    uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key" json:"server_id,omitempty"`
+	Server_id    string    `gorm:"uniqueIndex;not null;primary_key" json:"server_id,omitempty"`
 	Server_name  string    `gorm:"uniqueIndex;not null" json:"server_name,omitempty"`
 	Status       string    `gorm:"not null" json:"status,omitempty"`
 	Created_time time.Time `gorm:"not null" json:"created_time,omitempty"`
@@ -16,6 +14,7 @@ type Server struct {
 }
 
 type Create_server struct {
+	Server_id    string    `json:"server_id" binding:"required"`
 	Server_name  string    `json:"server_name" binding:"required"`
 	Status       string    `json:"status" binding:"required"`
 	Created_time time.Time `json:"created_time,omitempty"`
