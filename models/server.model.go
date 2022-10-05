@@ -16,7 +16,6 @@ type Server struct {
 }
 
 type Create_server struct {
-	Server_id    uuid.UUID `json:"server_id" binding:"required"`
 	Server_name  string    `json:"server_name" binding:"required"`
 	Status       string    `json:"status" binding:"required"`
 	Created_time time.Time `json:"created_time,omitempty"`
@@ -25,7 +24,6 @@ type Create_server struct {
 }
 
 type Update_server struct {
-	Server_id    uuid.UUID `json:"server_id,omitempty"`
 	Server_name  string    `json:"server_name,omitempty"`
 	Status       string    `json:"status,omitempty"`
 	Created_time time.Time `json:"created_time,omitempty"`

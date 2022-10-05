@@ -16,5 +16,8 @@ func New_route_server_controller(servercontroller controllers.Server_controller)
 func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	router := rg.Group("servers")
 	router.POST("/", c.servercontroller.CreateServer)
-
+	router.PUT("/:server_id", c.servercontroller.UpdateServer)
+	router.GET("/:server_id", c.servercontroller.GetServer)
+	router.GET("/", c.servercontroller.GetAllServer)
+	router.DELETE("/:server_id", c.servercontroller.DeleteServer)
 }

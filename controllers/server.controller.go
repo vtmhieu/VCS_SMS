@@ -28,7 +28,7 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 	}
 
 	now := time.Now()
-
+	var new_server models.Server
 	newServer := models.Server{
 		Server_name:  payload.Server_name,
 		Status:       payload.Status,
@@ -37,13 +37,17 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 		Ipv4:         payload.Ipv4,
 	}
 
+	new_server = newServer
 	results := sc.DB.Create(&newServer)
-	if strings.Contains(results.Error.Error(), "duplicate key") {
-		ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": results.Error.Error()})
+	if results.Error != nil {
+		if strings.Contains(results.Error.Error(), "duplicate key") {
+			ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": results.Error.Error()})
+			return
+		}
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newServer})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": new_server})
 }
 
 //update server
@@ -58,7 +62,7 @@ func (sc *Server_controller) UpdateServer(ctx *gin.Context) {
 	}
 	var updatedServer models.Server
 
-	result := sc.DB.First(&updatedServer, "id = ?", server_id)
+	result := sc.DB.First(&updatedServer, "server_id = ?", server_id)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "no server found"})
@@ -79,4 +83,49 @@ func (sc *Server_controller) UpdateServer(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedServer})
 
+}
+
+//get specific server
+
+func (sc *Server_controller) GetServer(ctx *gin.Context) {
+	server_id := ctx.Param("server_id")
+
+	var foundServer models.Server
+	result := sc.DB.First(&foundServer, "server_id=?", server_id)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "failed to find server"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "message": "server found", "data": foundServer})
+}
+
+//get al server
+
+func (sc *Server_controller) GetAllServer(ctx *gin.Context) {
+	var Servers []models.Server
+	results := sc.DB.Offset(0).Find(&Servers)
+
+	if results.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "no connection"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "number of servers": len(Servers), "data": Servers})
+}
+
+//delete server
+
+func (sc *Server_controller) DeleteServer(ctx *gin.Context) {
+	server_id := ctx.Param("server_id")
+
+	var Server_to_delete models.Server
+
+	result := sc.DB.Delete(&Server_to_delete, "server_id = ?", server_id)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad", "message": "no server id found."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"server_id": server_id, "status": "deleted"})
 }
