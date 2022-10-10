@@ -60,6 +60,8 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	succesfull := 0
+	failed := 0
 	now := time.Now()
 	for x, y := range payload.Create_server {
 		var new_server models.Server
@@ -75,14 +77,16 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 		results := sc.DB.Create(&newServer)
 		if results.Error != nil {
 			if strings.Contains(results.Error.Error(), "duplicate key") {
+				failed++
 				ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": results.Error.Error()})
-				return
+				continue
 			}
-			return
+			continue
 		}
-
+		succesfull++
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "number": x + 1, "data": new_server})
 	}
+	ctx.JSON(http.StatusOK, gin.H{"successful": succesfull, "failed": failed})
 }
 
 //update server
