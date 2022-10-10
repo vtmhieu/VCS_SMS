@@ -52,6 +52,16 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": new_server})
 }
 
+// Create many servers at one time
+func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
+	var payload *[]models.Create_server
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+}
+
 //update server
 
 func (sc *Server_controller) UpdateServer(ctx *gin.Context) {
@@ -149,4 +159,8 @@ func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"results": "all data has been deleted successfully"})
+}
+
+func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
+
 }
