@@ -86,7 +86,9 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 		succesfull++
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "number": x + 1, "data": new_server})
 	}
-	ctx.JSON(http.StatusOK, gin.H{"successful": succesfull, "failed": failed})
+
+	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"successful": succesfull, "failed": failed}})
+
 }
 
 //update server
