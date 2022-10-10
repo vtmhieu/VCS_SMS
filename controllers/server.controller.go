@@ -54,12 +54,35 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 
 // Create many servers at one time
 func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
-	var payload *[]models.Create_server
+	var payload *models.Create_many_server
+
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	now := time.Now()
+	for x, y := range payload.Create_server {
+		var new_server models.Server
+		newServer := models.Server{
+			Server_id:    y.Server_id,
+			Server_name:  y.Server_name,
+			Status:       y.Status,
+			Created_time: now,
+			Last_updated: now,
+			Ipv4:         y.Ipv4,
+		}
+		new_server = newServer
+		results := sc.DB.Create(&newServer)
+		if results.Error != nil {
+			if strings.Contains(results.Error.Error(), "duplicate key") {
+				ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": results.Error.Error()})
+				return
+			}
+			return
+		}
 
+		ctx.JSON(http.StatusOK, gin.H{"status": "success", "number": x + 1, "data": new_server})
+	}
 }
 
 //update server

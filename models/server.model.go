@@ -22,7 +22,16 @@ type Create_server struct {
 	Ipv4         string    `json:"ipv4,omitempty"`
 }
 
-type Create_many_server []Create_server
+type Create_many_server struct {
+	Create_server []struct {
+		Server_id    string    `json:"server_id" binding:"required"`
+		Server_name  string    `json:"server_name" binding:"required"`
+		Status       string    `json:"status" binding:"required"`
+		Created_time time.Time `json:"created_time,omitempty"`
+		Last_updated time.Time `json:"last_updated,omitempty"`
+		Ipv4         string    `json:"ipv4,omitempty"`
+	} `json:"servers"`
+}
 
 type Update_server struct {
 	Server_name  string    `json:"server_name,omitempty"`
