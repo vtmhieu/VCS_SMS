@@ -78,7 +78,7 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 		if results.Error != nil {
 			if strings.Contains(results.Error.Error(), "duplicate key") {
 				failed++
-				ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": results.Error.Error()})
+				ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "number": x + 1, "message": results.Error.Error()})
 				continue
 			}
 			continue
