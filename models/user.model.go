@@ -12,14 +12,15 @@ type User struct {
 }
 
 type Sign_up struct {
-	User_id       int    `json:"user_id" binding:"required"`
-	User_name     string `json:"user_name" binding:"required"`
-	User_password string `json:"password" binding:"required"`
-	User_email    string `json:"email" binding:"required"`
+	User_id                    int    `json:"user_id" binding:"required"`
+	User_name                  string `json:"user_name" binding:"required"`
+	User_password              string `json:"password" binding:"required, min=8"`
+	User_password_confirmation string `json:"password_confirmation" binding:"required"`
+	User_email                 string `json:"email" binding:"required"`
 }
 
 type Sign_in struct {
-	User_name     string `json:"user_name" binding:"required"`
+	User_email    string `json:"user_email" binding:"required"`
 	User_password string `json:"password" binding:"required"`
 }
 
