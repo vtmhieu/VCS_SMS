@@ -5,12 +5,12 @@ import (
 )
 
 type Server struct {
-	Server_id    string    `gorm:"uniqueIndex;not null;primary_key" json:"server_id,omitempty" excel:"server_id,omitempty"`
-	Server_name  string    `gorm:"uniqueIndex;not null" json:"server_name,omitempty" excel:"server_name,omitempty"`
-	Status       string    `gorm:"not null" json:"status,omitempty" excel:"status,omitempty"`
-	Created_time time.Time `gorm:"not null" json:"created_time,omitempty" excel:"created_time,omitempty"`
-	Last_updated time.Time `gorm:"not null" json:"last_updated,omitempty" excel:"last_updated,omitempty"`
-	Ipv4         string    `gorm:"not null" json:"ipv4,omitempty" excel:"ipv4,omitempty"`
+	Server_id    string    `gorm:"uniqueIndex;not null;primary_key" json:"server_id,omitempty" xml:"server_id,omitempty"`
+	Server_name  string    `gorm:"uniqueIndex;not null" json:"server_name,omitempty" xml:"server_name,omitempty"`
+	Status       string    `gorm:"not null" json:"status,omitempty" xml:"status,omitempty"`
+	Created_time time.Time `gorm:"not null" json:"created_time,omitempty" xml:"created_time,omitempty"`
+	Last_updated time.Time `gorm:"not null" json:"last_updated,omitempty" xml:"last_updated,omitempty"`
+	Ipv4         string    `gorm:"not null" json:"ipv4,omitempty" xml:"ipv4,omitempty"`
 }
 
 type Create_server struct {

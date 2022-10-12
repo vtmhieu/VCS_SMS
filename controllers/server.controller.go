@@ -154,7 +154,7 @@ func (sc *Server_controller) GetAllServer(ctx *gin.Context) {
 	results := sc.DB.Offset(int_from - 1).Limit(int_to - int_from + 1).Find(&Servers)
 
 	if results.Error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "no connection"})
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "bad request", "message": "no connection"})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "number of servers": len(Servers), "data": Servers})
@@ -167,7 +167,7 @@ func (sc *Server_controller) DeleteServer(ctx *gin.Context) {
 
 	var Server_to_delete models.Server
 
-	result := sc.DB.Offset(0).Delete(&Server_to_delete, "server_id = ?", server_id)
+	result := sc.DB.Offset(0).Delete(&Server_to_delete, "server_id=?", server_id)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad", "message": "no server id found."})
