@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -181,8 +182,9 @@ func (sc *Server_controller) DeleteServer(ctx *gin.Context) {
 
 func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
 	var Servers []models.Server
+	sc.DB.Offset(0).Find(&Servers)
 
-	results := sc.DB.Delete(&Servers)
+	results := sc.DB.Offset(0).Delete(&Servers)
 	if results.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": results.Error.Error()})
 		return
@@ -192,4 +194,20 @@ func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
 
 func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 
+}
+
+// check on/off + update server
+func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
+	var servers []models.Server
+	sc.DB.Offset(0).Find(&servers)
+	for _, server := range servers {
+		out, _ := exec.Command("ping", server.Ipv4, "-c 5", "-i 3", "-w 10").Output()
+		if strings.Contains(string(out), "Destination Host Unreachable") {
+			server.Status = "Offline"
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "can't reach to server"})
+
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"message": server.Status})
+		}
+	}
 }
