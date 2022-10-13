@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+	"net"
 	"net/http"
 	"os/exec"
 	"strconv"
@@ -208,6 +210,20 @@ func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{"message": server.Status})
+		}
+	}
+}
+
+func raw_connect(host string, ports []string) {
+	for _, port := range ports {
+		timeout := time.Second
+		conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), timeout)
+		if err != nil {
+			fmt.Println("Connecting error:", err)
+		}
+		if conn != nil {
+			defer conn.Close()
+			fmt.Println("Opened", net.JoinHostPort(host, port))
 		}
 	}
 }
