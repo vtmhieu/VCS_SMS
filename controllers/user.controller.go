@@ -2,8 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vtmhieu/VCS_SMS/models"
@@ -17,31 +15,17 @@ type User_controller struct {
 func New_user_controller(DB *gorm.DB) User_controller {
 	return User_controller{DB}
 }
-func (uc *User_controller) CreateUser(ctx *gin.Context) {
-	var payload *models.Sign_up
 
-	if err := ctx.ShouldBindJSON(&payload); err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-	now := time.Now()
-	user := models.User{
-		User_id:         payload.User_id,
-		User_name:       payload.User_name,
-		User_password:   payload.User_password,
-		User_email:      payload.User_email,
-		User_created:    now,
-		User_updated_at: now,
+func (uc *User_controller) GetMe(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(models.User)
+
+	userResponse := models.User_response{
+		User_id:         currentUser.User_id,
+		User_name:       currentUser.User_name,
+		User_email:      currentUser.User_email,
+		User_created:    currentUser.User_created,
+		User_updated_at: currentUser.User_updated_at,
 	}
 
-	new_user := user
-	results := uc.db.Create(&user)
-	if results.Error != nil {
-		if strings.Contains(results.Error.Error(), "duplicate key") {
-			ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": results.Error.Error()})
-			return
-		}
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "data": gin.H{"user": new_user}})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"user": userResponse}})
 }
