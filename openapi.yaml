@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: VCS_SMS
+server:
+  -url: https://localhost:8000/api
+path:
+  /servers:
+    get:
+      description: "list of all servers"
+      parameters:
