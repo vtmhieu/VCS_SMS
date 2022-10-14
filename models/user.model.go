@@ -27,7 +27,6 @@ type Sign_in struct {
 type User_response struct {
 	User_id         int       `json:"user_id"`
 	User_name       string    `json:"user_name"`
-	User_password   string    `json:"password"`
 	User_email      string    `json:"email"`
 	User_created    time.Time `json:"created"`
 	User_updated_at time.Time `json:"updated_at"`

@@ -16,6 +16,9 @@ var (
 
 	Servercontroller      controllers.Server_controller
 	ServerRouteController routes.Server_Route_Controller
+
+	Usercontroller controllers.User_controller
+	UserRouteController routes.
 )
 
 func init() {
