@@ -7,7 +7,7 @@ import (
 )
 
 type User_Route_controller struct {
-	usercontroller controllers.Server_controller
+	usercontroller controllers.User_controller
 }
 
 func New_user_route_controller(userController controllers.User_controller) User_Route_controller {
@@ -16,5 +16,5 @@ func New_user_route_controller(userController controllers.User_controller) User_
 
 func (uc *User_Route_controller) UserRoute(rg *gin.RouterGroup) {
 	router := rg.Group("users")
-	router.GET("/me", middleware.DeserializeUser(), uc.usercontroller.Check)
+	router.GET("/me", middleware.DeserializeUser(), uc.usercontroller.GetMe)
 }

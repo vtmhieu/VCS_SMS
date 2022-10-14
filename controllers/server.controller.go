@@ -25,7 +25,7 @@ func New_server_controller(DB *gorm.DB) Server_controller {
 // create a new server
 func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 	var payload *models.Create_server
-
+	currentUser := ctx.MustGet("currentUser").(models.User)
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -37,6 +37,7 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 		Server_id:    payload.Server_id,
 		Server_name:  payload.Server_name,
 		Status:       payload.Status,
+		User_id:      currentUser.User_id,
 		Created_time: now,
 		Last_updated: now,
 		Ipv4:         payload.Ipv4,
@@ -59,6 +60,7 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 	var payload *models.Create_many_server
 
+	currentUser := ctx.MustGet("currentUser").(models.User)
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -72,6 +74,7 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 			Server_id:    y.Server_id,
 			Server_name:  y.Server_name,
 			Status:       y.Status,
+			User_id:      currentUser.User_id,
 			Created_time: now,
 			Last_updated: now,
 			Ipv4:         y.Ipv4,
@@ -118,6 +121,7 @@ func (sc *Server_controller) UpdateServer(ctx *gin.Context) {
 	server_to_updated := models.Server{
 		Server_name:  payload.Server_name,
 		Status:       payload.Status,
+		User_id:      updatedServer.User_id,
 		Created_time: updatedServer.Created_time,
 		Last_updated: now,
 		Ipv4:         payload.Ipv4,
