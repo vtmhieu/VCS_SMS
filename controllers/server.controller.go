@@ -52,7 +52,7 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": new_server})
+	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": new_server})
 }
 
 // Create many servers at one time
@@ -226,4 +226,27 @@ func raw_connect(host string, ports []string) {
 			fmt.Println("Opened", net.JoinHostPort(host, port))
 		}
 	}
+}
+
+// check if ipv4 has how many online and offline
+
+func (sc *Server_controller) Check(ctx *gin.Context) {
+	server_ipv4 := ctx.Param("ipv4")
+
+	var servers []models.Server
+	//find all servers with ipv4 = ...
+	sc.DB.Find(&servers, "ipv4=?", server_ipv4)
+	online := 0
+	offline := 0
+	for _, server := range servers {
+		if strings.ToLower(server.Status) == "online" {
+			online++
+		} else if strings.ToLower(server.Status) == "offline" {
+			offline++
+		} else {
+			continue
+		}
+	}
+	ctx.JSON(http.StatusOK, gin.H{"server_ipv4": server_ipv4, "result": gin.H{"online": online, "offline": offline}})
+
 }

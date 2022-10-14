@@ -23,4 +23,5 @@ func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	router.DELETE("/", c.servercontroller.Delete_all_servers)
 	router.POST("/all", c.servercontroller.CreatemanyServer)
 	router.GET("/all/port", c.servercontroller.Check_on_off)
+	router.GET("/ipv4/:ipv4", c.servercontroller.Check)
 }
