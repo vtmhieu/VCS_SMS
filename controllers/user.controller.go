@@ -19,7 +19,7 @@ func New_user_controller(DB *gorm.DB) User_controller {
 func (uc *User_controller) GetMe(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(models.User)
 
-	userResponse := models.User_response{
+	userResponse := models.User{
 		User_id:         currentUser.User_id,
 		User_name:       currentUser.User_name,
 		User_email:      currentUser.User_email,

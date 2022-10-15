@@ -42,8 +42,8 @@ func (ac *Auth_controller) Sign_up(ctx *gin.Context) {
 	}
 
 	now := time.Now()
-	newUser := models.User_response{
-		// User_id:         payload.User_id,
+	newUser := models.User{
+		User_id:         payload.User_id,
 		User_name:       payload.User_name,
 		User_password:   hashed_password,
 		User_email:      strings.ToLower(payload.User_email),
@@ -53,7 +53,7 @@ func (ac *Auth_controller) Sign_up(ctx *gin.Context) {
 	result := ac.db.Create(&newUser)
 	//check if duplicate
 	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
-		ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": err.Error()})
+		ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": "duplicate key value violates unique"})
 		return
 	} else if result.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "failed", "message": err.Error()})
@@ -72,7 +72,7 @@ func (ac *Auth_controller) Sign_in(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
 	}
 	var user models.User
-	result := ac.db.First(&user, "email = ?", strings.ToLower(payload.User_email))
+	result := ac.db.First(&user, "user_email=?", strings.ToLower(payload.User_email))
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email"})
 		return

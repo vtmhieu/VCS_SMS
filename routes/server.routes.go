@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vtmhieu/VCS_SMS/controllers"
+	"github.com/vtmhieu/VCS_SMS/middleware"
 )
 
 type Server_Route_Controller struct {
@@ -21,6 +22,7 @@ func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	// validator := NewOpenAPIMiddleware()
 	router := rg.Group("servers")
 	// router.Use(validator)
+	router.Use(middleware.DeserializeUser())
 	router.POST("/", c.servercontroller.CreateServer)
 	router.PUT("/:server_id", c.servercontroller.UpdateServer)
 	router.GET("/:server_id", c.servercontroller.GetServer)
