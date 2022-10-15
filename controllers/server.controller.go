@@ -308,11 +308,11 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 				server.Server_name = value
 			} else if i == 2 {
 				server.Status = value
-			} else if i == 3 {
-				server.Created_time = now
 			} else if i == 4 {
-				server.Last_updated = now
+				server.Created_time = now
 			} else if i == 5 {
+				server.Last_updated = now
+			} else if i == 6 {
 				server.Ipv4 = value
 			} else {
 				continue
