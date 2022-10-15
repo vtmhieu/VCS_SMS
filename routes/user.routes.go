@@ -15,8 +15,8 @@ func New_user_route_controller(userController controllers.User_controller) User_
 }
 
 func (uc *User_Route_controller) UserRoute(rg *gin.RouterGroup) {
-	validator := NewOpenAPIMiddleware()
+	// validator := NewOpenAPIMiddleware()
 	router := rg.Group("users")
-	router.Use(validator)
+	// router.Use(validator)
 	router.GET("/me", middleware.DeserializeUser(), uc.usercontroller.GetMe)
 }

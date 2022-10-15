@@ -15,9 +15,9 @@ func New_Auth_Route_controller(authcontroller controllers.Auth_controller) Auth_
 }
 
 func (ac *Auth_Route_controller) AuthRoute(rg *gin.RouterGroup) {
-	validator := NewOpenAPIMiddleware()
+	// validator := NewOpenAPIMiddleware()
 	router := rg.Group("auths")
-	router.Use(validator)
+	// router.Use(validator)
 	router.POST("/register", ac.authcontroller.Sign_up)
 	router.POST("/login", ac.authcontroller.Sign_in)
 	router.GET("/refresh", ac.authcontroller.RefreshAccessToken)

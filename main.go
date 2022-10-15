@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vtmhieu/VCS_SMS/controllers"
 	"github.com/vtmhieu/VCS_SMS/initializers"
-	"github.com/vtmhieu/VCS_SMS/middleware"
 	"github.com/vtmhieu/VCS_SMS/routes"
 )
 
@@ -25,10 +24,10 @@ var (
 	AuthRouteController routes.Auth_Route_controller
 )
 
-func NewOpenAPIMiddleware() gin.HandlerFunc {
-	validator := middleware.OpenapiInputValidator("./openapi.yaml")
-	return validator
-}
+// func NewOpenAPIMiddleware() gin.HandlerFunc {
+// 	validator := middleware.OpenapiInputValidator("./openapi.yaml")
+// 	return validator
+// }
 
 func init() {
 	config, err := initializers.LoadConfig(".")
