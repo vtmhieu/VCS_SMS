@@ -40,7 +40,7 @@ func (ac *Auth_controller) Sign_up(ctx *gin.Context) {
 	}
 
 	now := time.Now()
-	newUser := &models.User_response{
+	newUser := models.User_response{
 		User_id:         payload.User_id,
 		User_name:       payload.User_name,
 		User_password:   hashed_password,
