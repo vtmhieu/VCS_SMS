@@ -21,7 +21,6 @@ func init() {
 //Then, we evoked the AutoMigrate() function provided by GORM to create the database migration and push the changes to the database.
 
 func main() {
-	initializers.DB.AutoMigrate(&models.Server{})
-	initializers.DB.AutoMigrate(&models.User{})
+	initializers.DB.AutoMigrate(&models.Server{}, &models.User{})
 	fmt.Println("👍 Migration complete")
 }
