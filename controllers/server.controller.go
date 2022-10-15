@@ -127,7 +127,7 @@ func (sc *Server_controller) UpdateServer(ctx *gin.Context) {
 
 	sc.DB.Model(&updatedServer).Updates(server_to_updated)
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedServer})
+	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": updatedServer})
 
 }
 

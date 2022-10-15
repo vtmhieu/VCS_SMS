@@ -40,7 +40,7 @@ func (ac *Auth_controller) Sign_up(ctx *gin.Context) {
 	}
 
 	now := time.Now()
-	newUser := models.User{
+	newUser := &models.User_response{
 		User_id:         payload.User_id,
 		User_name:       payload.User_name,
 		User_password:   hashed_password,
@@ -58,7 +58,8 @@ func (ac *Auth_controller) Sign_up(ctx *gin.Context) {
 		return
 	} //check if cant connect
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"user": newUser}})
+	New_user := newUser
+	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": gin.H{"user": New_user}})
 }
 
 // Sign in

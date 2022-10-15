@@ -28,6 +28,7 @@ type User_response struct {
 	User_id         string    `json:"user_id"`
 	User_name       string    `json:"user_name"`
 	User_email      string    `json:"email"`
+	User_password   string    `json:"password"`
 	User_created    time.Time `json:"created"`
 	User_updated_at time.Time `json:"updated_at"`
 }
