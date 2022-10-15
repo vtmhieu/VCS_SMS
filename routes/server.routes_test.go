@@ -1,17 +1,5 @@
 package routes
 
-import (
-	"bytes"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/vtmhieu/VCS_SMS/models"
-)
-
 // type MockRepository struct {
 // 	mock.Mock
 // }
@@ -46,25 +34,25 @@ import (
 // 	})
 // }
 
-func SetUpRouter() *gin.Engine {
-	server := gin.Default()
-	return server
-}
+// func SetUpRouter() *gin.Engine {
+// 	server := gin.Default()
+// 	return server
+// }
 
-func TestCreateServer(t *testing.T) {
-	r := SetUpRouter()
-	var c Server_Route_Controller
-	r.POST("/api/servers/", c.servercontroller.CreateServer)
-	// now := time.Now()
-	server := models.Create_server{
-		Server_id:   "demo",
-		Server_name: "demo_name",
-		Status:      "demo_status",
-		Ipv4:        "1222.111.1220",
-	}
-	jsonValue, _ := json.Marshal(server)
-	req, _ := http.NewRequest("POST", "/api/servers/", bytes.NewBuffer(jsonValue))
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusCreated, w.Code)
-}
+// func TestCreateServer(t *testing.T) {
+// 	r := SetUpRouter()
+// 	var c Server_Route_Controller
+// 	r.POST("/api/servers/", c.servercontroller.CreateServer)
+// 	// now := time.Now()
+// 	server := models.Create_server{
+// 		Server_id:   "demo",
+// 		Server_name: "demo_name",
+// 		Status:      "demo_status",
+// 		Ipv4:        "1222.111.1220",
+// 	}
+// 	jsonValue, _ := json.Marshal(server)
+// 	req, _ := http.NewRequest("POST", "/api/servers/", bytes.NewBuffer(jsonValue))
+// 	w := httptest.NewRecorder()
+// 	r.ServeHTTP(w, req)
+// 	assert.Equal(t, http.StatusCreated, w.Code)
+// }

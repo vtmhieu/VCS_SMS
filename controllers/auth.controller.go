@@ -32,16 +32,18 @@ func (ac *Auth_controller) Sign_up(ctx *gin.Context) {
 	//confirm password
 	if payload.User_password_confirmation != payload.User_password {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "wrong password confirmation"})
+		return
 	}
 
 	hashed_password, err := utils.HashPassword(payload.User_password)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": err.Error()})
+		return
 	}
 
 	now := time.Now()
 	newUser := models.User_response{
-		User_id:         payload.User_id,
+		// User_id:         payload.User_id,
 		User_name:       payload.User_name,
 		User_password:   hashed_password,
 		User_email:      strings.ToLower(payload.User_email),
