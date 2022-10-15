@@ -33,4 +33,5 @@ func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	router.GET("/all/port", c.servercontroller.Check_on_off)
 	router.GET("/ipv4/:ipv4", c.servercontroller.Check)
 	router.GET("/excel/export", c.servercontroller.Export_Excel)
+	router.POST("/excel/import", c.servercontroller.Post_by_excel)
 }
