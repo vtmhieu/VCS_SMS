@@ -197,10 +197,6 @@ func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"results": "all data has been deleted successfully"})
 }
 
-func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
-
-}
-
 // check on/off + update server
 func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 	var servers []models.Server
@@ -282,3 +278,63 @@ func (sc *Server_controller) Export_Excel(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "file has been created successfully"})
 }
+
+func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(models.User)
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
+	}
+	// log.Println(file.Filename)
+	var server models.Server
+	server.User_id = currentUser.User_id
+	f, err := excelize.OpenFile(file.Filename)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
+	}
+	row, err := f.Rows("Sheet1")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
+	}
+	failed := 0
+	succesfull := 0
+	x := 0
+	now := time.Now()
+	for row.Next() {
+		for i, value := range row.Columns() {
+			if i == 0 {
+				server.Server_id = value
+			} else if i == 1 {
+				server.Server_name = value
+			} else if i == 2 {
+				server.Status = value
+			} else if i == 3 {
+				server.Created_time = now
+			} else if i == 4 {
+				server.Last_updated = now
+			} else if i == 5 {
+				server.Ipv4 = value
+			} else {
+				continue
+			}
+		}
+		x++
+		results := sc.DB.Create(&server)
+		if results.Error != nil {
+			if strings.Contains(results.Error.Error(), "duplicate key") {
+				failed++
+				ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "number": x, "message": results.Error.Error()})
+				continue
+			}
+			continue
+		}
+		succesfull++
+		ctx.JSON(http.StatusOK, gin.H{"status": "success", "number": x, "data": server})
+	}
+}
+
+// 		err = ctx.SaveUploadedFile(file, "saved/"+file.Filename)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
