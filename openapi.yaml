@@ -5,7 +5,293 @@ info:
 server:
   -url: https://localhost:8000/api
 path:
+  /user/me:
+    get:
+      description: Get info of logged in user
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+  /auths/login:
+    get:
+      summary: "Rendering login page"
+      responses:
+        200:
+          description: "Rendering successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+    post:
+      summary: "User is logging in"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Authentication"
+      responses:
+        200:
+          description: "Login successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auths/register:
+    get:
+      summary: "Rendering register page"
+      responses:
+        200:
+          description: "Render sucessfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+    post:
+      summary: "User is signing up"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+      responses:
+        200:
+          description: "Sign up sucessfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+  /auths/logout:
+    get:
+      description: Log out
+      responses:
+        200:
+          description: Log out successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auths/refresh:
+    get:
+      description: Refresh token
+      responses:
+        200:
+          description: Refresh successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Refresh"
+
   /servers:
     get:
-      description: "list of all servers"
+      description: "List of servers"
       parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            format: int
+          description: page number
+      responses:
+        200:
+          description: get list of servers successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    bodyPost:
+                      type: string
+                    userName:
+                      type: string
+  /servers/{server_id}:
+    get:
+      description: Get server by id
+      parameters:
+        - in: path
+          name: server_id
+          description: server's id
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        200:
+          description: server is available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Server"
+        400:
+          description: server is not available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+    put:
+      description: Update server by id
+      parameters:
+        - in: path
+          name: server_id
+          description: server id
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        200:
+          description: server updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        400:
+          description: server is not available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+    delete:
+      description: Delete server by id
+      parameters:
+        - in: path
+          name: server_id
+          description: id of server to delete
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        200:
+          description: "Server deleted successfully"
+          content:
+            application/json:
+              schema:
+                $schema: "#/components/schemas/Response"
+        400:
+          description: "Server not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+  /servers/:
+    post:
+      description: Create a new server
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "application/json"
+      responses:
+        200:
+          description: "Server created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+    get:
+      description: "Get all server"
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            format: int32
+          description: page number
+      responses:
+        200:
+          description: Get all server successfully
+          content:
+            application/json:
+              schema:
+              type: "application/json"
+              items:
+                properties:
+                  bodyPost:
+                    type: string
+                  userName:
+                    type: string
+
+    delete:
+      description: Delete all servers
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            format: int
+          description: page number
+      responses:
+        200:
+          description: "Servers deleted successfully"
+          content:
+            application/json:
+              schema:
+                $schema: "#/components/schemas/Response"
+
+
+components:
+  schemas:
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        description:
+          type: string
+
+    Authentication:
+      type: object
+      properties:
+        email:
+         type: string
+         example: vtmhieu111@gmail.com
+          pattern: '^\d{3}-\d{2}-\d{4}$'
+        password:
+          type: string
+          example: hieuvtm111
+    
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+          example: hieuvtm1
+        email:
+          type: string
+          example: vtmhieu111@gmail.com
+          pattern: '^\d{3}-\d{2}-\d{4}$'
+        password:
+          type: string
+          example: hieuvtm111
+
+    Server:
+      type: object
+      properties:
+        bodyPost:
+          type: "application/json"
+        userEmail:
+          type: string
