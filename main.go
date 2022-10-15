@@ -37,14 +37,14 @@ func init() {
 
 	initializers.ConnectDB(&config)
 
-	Servercontroller = controllers.New_server_controller(initializers.DB)
-	ServerRouteController = routes.New_route_server_controller(Servercontroller)
-
 	Usercontroller = controllers.New_user_controller(initializers.DB)
 	UserRouteController = routes.New_user_route_controller(Usercontroller)
 
 	Authcontroller = controllers.New_auth_controller(initializers.DB)
 	AuthRouteController = routes.New_Auth_Route_controller(Authcontroller)
+
+	Servercontroller = controllers.New_server_controller(initializers.DB)
+	ServerRouteController = routes.New_route_server_controller(Servercontroller)
 
 	server = gin.Default()
 }
@@ -64,9 +64,9 @@ func main() {
 		message := "Welcome to VCS Server Management System"
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
 	})
-
-	ServerRouteController.Server_Route(router)
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
+	ServerRouteController.Server_Route(router)
+
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
