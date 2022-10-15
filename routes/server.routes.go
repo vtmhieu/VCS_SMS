@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vtmhieu/VCS_SMS/controllers"
+	"github.com/vtmhieu/VCS_SMS/middleware"
 )
 
 type Server_Route_Controller struct {
@@ -12,9 +13,14 @@ type Server_Route_Controller struct {
 func New_route_server_controller(servercontroller controllers.Server_controller) Server_Route_Controller {
 	return Server_Route_Controller{servercontroller}
 }
-
+func NewOpenAPIMiddleware() gin.HandlerFunc {
+	validator := middleware.OpenapiInputValidator("./openapi.yaml")
+	return validator
+}
 func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
+	validator := NewOpenAPIMiddleware()
 	router := rg.Group("servers")
+	router.Use(validator)
 	router.POST("/", c.servercontroller.CreateServer)
 	router.PUT("/:server_id", c.servercontroller.UpdateServer)
 	router.GET("/:server_id", c.servercontroller.GetServer)
