@@ -331,6 +331,7 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 		succesfull++
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "number": x, "data": server})
 	}
+	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"success": succesfull, "fail": failed}})
 }
 
 // 		err = ctx.SaveUploadedFile(file, "saved/"+file.Filename)
