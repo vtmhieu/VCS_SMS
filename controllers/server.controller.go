@@ -1,8 +1,9 @@
 package controllers
 
 import (
+	"fmt"
+	"net"
 	"net/http"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -198,31 +199,17 @@ func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
 }
 
 // check on/off + update server
-func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
-	var servers []models.Server
-	sc.DB.Offset(0).Find(&servers)
-	for _, server := range servers {
-		out, _ := exec.Command("ping", server.Ipv4, "-c 5", "-i 3", "-w 10").Output()
-		if strings.Contains(string(out), "Destination Host Unreachable") {
-			server.Status = "Offline"
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "can't reach to server"})
+// func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
+// 	var servers []models.Server
+// 	sc.DB.Offset(0).Find(&servers)
+// 	for _, server := range servers {
+// 		out, _ := exec.Command("ping", server.Ipv4, "-c 5", "-i 3", "-w 10").Output()
+// 		if strings.Contains(string(out), "Destination Host Unreachable") {
+// 			server.Status = "Offline"
+// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "can't reach to server"})
 
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"message": server.Status})
-		}
-	}
-}
-
-// func raw_connect(host string, ports []string) {
-// 	for _, port := range ports {
-// 		timeout := time.Second
-// 		conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), timeout)
-// 		if err != nil {
-// 			fmt.Println("Connecting error:", err)
-// 		}
-// 		if conn != nil {
-// 			defer conn.Close()
-// 			fmt.Println("Opened", net.JoinHostPort(host, port))
+// 		} else {
+// 			ctx.JSON(http.StatusOK, gin.H{"message": server.Status})
 // 		}
 // 	}
 // }
@@ -334,8 +321,53 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"success": succesfull, "fail": failed}})
 }
 
-// 		err = ctx.SaveUploadedFile(file, "saved/"+file.Filename)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
+	var (
+		host = "http://localhost:3000"
+	)
+	var servers []models.Server
+	sc.DB.Offset(0).Find(&servers)
+	for _, server := range servers {
+		timeout := time.Second * 30
+		conn, err := net.DialTimeout("tcp4", net.JoinHostPort(host, server.Ipv4), timeout)
+		if err != nil {
+			fmt.Println("Connecting error:", err)
+		}
+		if conn != nil {
+			defer conn.Close()
+			fmt.Println("Opened", net.JoinHostPort(host, server.Ipv4))
+		}
+	}
+}
+
+// func (sc *Server_controller) Check_ipv4(host string, port int) {
+// 	p := fastping.NewPinger()
+// 	ra, err := net.ResolveIPAddr("ip4:icmp", os.Args[1])
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		os.Exit(1)
+// 	}
+// 	p.AddIPAddr(ra)
+// 	p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
+// 		fmt.Printf("IP Addr: %s receive, RTT: %v\n", addr.String(), rtt)
+// 	}
+// 	p.OnIdle = func() {
+// 		fmt.Println("finish")
+// 	}
+// 	err = p.Run()
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// }
+
+// for _, port := range ports {
+// 	timeout := time.Second
+// 	conn, err := net.DialTimeout("tcp4", net.JoinHostPort(host, port), timeout)
+// 	if err != nil {
+// 		fmt.Println("Connecting error:", err)
+// 	}
+// 	if conn != nil {
+// 		defer conn.Close()
+// 		fmt.Println("Opened", net.JoinHostPort(host, port))
+// 	}
+// }
