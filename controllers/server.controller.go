@@ -323,7 +323,7 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 
 func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 	var (
-		host = "http://localhost:3000"
+		host = ""
 	)
 	var servers []models.Server
 	sc.DB.Offset(0).Find(&servers)
