@@ -332,9 +332,11 @@ func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 		conn, err := net.DialTimeout("tcp4", net.JoinHostPort(host, server.Ipv4), timeout)
 		if err != nil {
 			fmt.Println("Connecting error:", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "offline"})
 		}
 		if conn != nil {
 			defer conn.Close()
+			ctx.JSON(http.StatusOK, gin.H{"message": "online"})
 			fmt.Println("Opened", net.JoinHostPort(host, server.Ipv4))
 		}
 	}
