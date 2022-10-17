@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"strconv"
@@ -198,24 +197,6 @@ func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"results": "all data has been deleted successfully"})
 }
 
-// check on/off + update server
-// func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
-// 	var servers []models.Server
-// 	sc.DB.Offset(0).Find(&servers)
-// 	for _, server := range servers {
-// 		out, _ := exec.Command("ping", server.Ipv4, "-c 5", "-i 3", "-w 10").Output()
-// 		if strings.Contains(string(out), "Destination Host Unreachable") {
-// 			server.Status = "Offline"
-// 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "can't reach to server"})
-
-// 		} else {
-// 			ctx.JSON(http.StatusOK, gin.H{"message": server.Status})
-// 		}
-// 	}
-// }
-
-// check if ipv4 has how many online and offline
-
 func (sc *Server_controller) Check(ctx *gin.Context) {
 	server_ipv4 := ctx.Param("ipv4")
 
@@ -322,54 +303,72 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 }
 
 func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
-	var (
-		host = ""
-	)
+	// host, _ := os.Hostname()
+	currentUser := ctx.MustGet("currentUser").(models.User)
+	// host := "127.0.0.1"
 	var servers []models.Server
 	sc.DB.Offset(0).Find(&servers)
 	for _, server := range servers {
 		timeout := time.Second * 30
-		conn, err := net.DialTimeout("tcp4", net.JoinHostPort(host, server.Ipv4), timeout)
+		conn, err := net.DialTimeout("ip4:1", server.Ipv4, timeout)
 		if err != nil {
-			fmt.Println("Connecting error:", err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "offline"})
+
+			now := time.Now()
+			server_to_update := models.Server{
+				Server_id:    server.Server_id,
+				Server_name:  server.Server_name,
+				Status:       "Offline",
+				User_id:      currentUser.User_id,
+				Created_time: server.Created_time,
+				Last_updated: now,
+				Ipv4:         server.Ipv4,
+			}
+			sc.DB.Model(&server).Updates(server_to_update)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"IpV4": server.Ipv4, "message": "Offline", "updated": server_to_update})
+
 		}
 		if conn != nil {
 			defer conn.Close()
-			ctx.JSON(http.StatusOK, gin.H{"message": "online"})
-			fmt.Println("Opened", net.JoinHostPort(host, server.Ipv4))
+			now := time.Now()
+			server_to_update := models.Server{
+				Server_id:    server.Server_id,
+				Server_name:  server.Server_name,
+				Status:       "Online",
+				User_id:      currentUser.User_id,
+				Created_time: server.Created_time,
+				Last_updated: now,
+				Ipv4:         server.Ipv4,
+			}
+			sc.DB.Model(&server).Updates(server_to_update)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"IpV4": server.Ipv4, "message": "Online", "updated": server_to_update})
+
 		}
 	}
 }
 
-// func (sc *Server_controller) Check_ipv4(host string, port int) {
-// 	p := fastping.NewPinger()
-// 	ra, err := net.ResolveIPAddr("ip4:icmp", os.Args[1])
+//dial tcp 127.0.0.1:6500:
+
+//how to check ipv4 in network
+
+// func main() {
+// 	host, _ := os.Hostname()
+// 	fmt.Println("Host", host)
+// 	addrs, _ := net.LookupIP(host)
+// 	for _, addr := range addrs {
+// 		if ipv4 := addr.To4(); ipv4 != nil {
+// 			fmt.Println("IPv4: ", ipv4)
+// 		}
+// 	}
+//get ipv4 from list here
+
+// 	conn, err := net.Dial("ip4:1", "192.168.1.204")
 // 	if err != nil {
-// 		fmt.Println(err)
-// 		os.Exit(1)
+// 		fmt.Println("Error in net.Dial", err)
+// 		return
 // 	}
-// 	p.AddIPAddr(ra)
-// 	p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
-// 		fmt.Printf("IP Addr: %s receive, RTT: %v\n", addr.String(), rtt)
-// 	}
-// 	p.OnIdle = func() {
-// 		fmt.Println("finish")
-// 	}
-// 	err = p.Run()
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
+
+//check connection 
+// 	conn.Close()
+// 	fmt.Println("Successful")
 // }
 
-// for _, port := range ports {
-// 	timeout := time.Second
-// 	conn, err := net.DialTimeout("tcp4", net.JoinHostPort(host, port), timeout)
-// 	if err != nil {
-// 		fmt.Println("Connecting error:", err)
-// 	}
-// 	if conn != nil {
-// 		defer conn.Close()
-// 		fmt.Println("Opened", net.JoinHostPort(host, port))
-// 	}
-// }
