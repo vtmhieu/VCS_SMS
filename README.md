@@ -76,6 +76,6 @@ Lấy mọi data trong DB chuyển thành file excel:
 ![image](https://user-images.githubusercontent.com/88451173/196333631-327f9693-0947-400d-bf0a-6846d4f9e33d.png)
 
 \*\*Chưa hoàn thành:
-UnitTest (đang tìm hiểu)
+UnitTest (đã hiểu và đang làm lại)
 Realtime Update
 calculate Uptime using Elasticsearch
