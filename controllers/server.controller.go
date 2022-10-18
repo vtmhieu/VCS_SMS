@@ -367,8 +367,7 @@ func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 // 		return
 // 	}
 
-//check connection 
+//check connection
 // 	conn.Close()
 // 	fmt.Println("Successful")
 // }
-
