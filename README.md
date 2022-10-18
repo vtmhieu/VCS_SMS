@@ -76,6 +76,6 @@ Cột 7: IpV4.
 ![image](https://user-images.githubusercontent.com/88451173/196333631-327f9693-0947-400d-bf0a-6846d4f9e33d.png)
 
 - Chưa hoàn thành:
-  UnitTest (đã hiểu và đang làm lại)
-  Realtime Update
-  calculate Uptime using Elasticsearch
+  UnitTest (đã hiểu và đang làm lại) /n
+  Realtime Update /n
+  calculate Uptime using Elasticsearch /n
