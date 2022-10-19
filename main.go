@@ -68,5 +68,5 @@ func main() {
 	UserRouteController.UserRoute(router)
 	ServerRouteController.Server_Route(router)
 
-	log.Fatal(server.Run(":" + config.ServerPort))
+	log.Fatal(server.Run("0.0.0.0:" + config.ServerPort))
 }
