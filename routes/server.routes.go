@@ -28,7 +28,7 @@ func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	router.GET("/:server_id", c.servercontroller.GetServer)
 	router.GET("/", c.servercontroller.GetAllServer)
 	router.DELETE("/:server_id", c.servercontroller.DeleteServer)
-	router.DELETE("/", c.servercontroller.Delete_all_servers)
+	router.DELETE("/all", c.servercontroller.Delete_all_servers)
 	router.POST("/all", c.servercontroller.CreatemanyServer)
 	router.GET("/ipv4/:ipv4", c.servercontroller.Check)
 	router.GET("/excel/export", c.servercontroller.Export_Excel)

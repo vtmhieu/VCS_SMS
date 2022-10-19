@@ -46,13 +46,13 @@ func (sc *Server_controller) CreateServer(ctx *gin.Context) {
 	results := sc.DB.Create(&newServer)
 	if results.Error != nil {
 		if strings.Contains(results.Error.Error(), "duplicate key") {
-			ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "message": results.Error.Error()})
+			ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "message": results.Error.Error()})
 			return
 		}
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": new_server})
+	ctx.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "data": new_server})
 }
 
 // Create many servers at one time
@@ -83,13 +83,13 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 		if results.Error != nil {
 			if strings.Contains(results.Error.Error(), "duplicate key") {
 				failed++
-				ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "number": x + 1, "message": results.Error.Error()})
+				ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "number": x + 1, "message": results.Error.Error()})
 				continue
 			}
 			continue
 		}
 		succesfull++
-		ctx.JSON(http.StatusOK, gin.H{"status": "success", "number": x + 1, "data": new_server})
+		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number": x + 1, "data": new_server})
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"successful": succesfull, "failed": failed}})
@@ -111,7 +111,7 @@ func (sc *Server_controller) UpdateServer(ctx *gin.Context) {
 	result := sc.DB.First(&updatedServer, "server_id = ?", server_id)
 
 	if result.Error != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "no server found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no server found"})
 		return
 	}
 
@@ -141,10 +141,10 @@ func (sc *Server_controller) GetServer(ctx *gin.Context) {
 	result := sc.DB.First(&foundServer, "server_id=?", server_id)
 
 	if result.Error != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "failed to find server"})
+		ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "failed to find server"})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "message": "server found", "data": foundServer})
+	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "server found", "data": foundServer})
 }
 
 //get all server
@@ -160,10 +160,10 @@ func (sc *Server_controller) GetAllServer(ctx *gin.Context) {
 	results := sc.DB.Offset(int_from - 1).Limit(int_to - int_from + 1).Find(&Servers)
 
 	if results.Error != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"status": "bad request", "message": "no connection"})
+		ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "number of servers": len(Servers), "data": Servers})
+	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number of servers": len(Servers), "data": Servers})
 }
 
 //delete server
@@ -176,11 +176,11 @@ func (sc *Server_controller) DeleteServer(ctx *gin.Context) {
 	result := sc.DB.Offset(0).Delete(&Server_to_delete, "server_id=?", server_id)
 
 	if result.Error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad", "message": "no server id found."})
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "no server id found."})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"server_id": server_id, "status": "deleted"})
+	ctx.JSON(http.StatusOK, gin.H{"server_id": server_id, "status": http.StatusOK, "message": "Deleted"})
 }
 
 //delete all servers
@@ -194,7 +194,7 @@ func (sc *Server_controller) Delete_all_servers(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": results.Error.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"results": "all data has been deleted successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "results": "all data has been deleted successfully"})
 }
 
 func (sc *Server_controller) Check(ctx *gin.Context) {
@@ -244,6 +244,7 @@ func (sc *Server_controller) Export_Excel(ctx *gin.Context) {
 	if err := f.SaveAs("Server.xlsx"); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "file has been created successfully"})
 }
 
@@ -291,7 +292,7 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 		if results.Error != nil {
 			if strings.Contains(results.Error.Error(), "duplicate key") {
 				failed++
-				ctx.JSON(http.StatusConflict, gin.H{"status": "failed", "number": x, "message": results.Error.Error()})
+				ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "number": x, "message": results.Error.Error()})
 				continue
 			}
 			continue
@@ -340,7 +341,7 @@ func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 				Ipv4:         server.Ipv4,
 			}
 			sc.DB.Model(&server).Updates(server_to_update)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"IpV4": server.Ipv4, "message": "Online", "updated": server_to_update})
+			ctx.JSON(http.StatusOK, gin.H{"IpV4": server.Ipv4, "message": "Online", "updated": server_to_update})
 
 		}
 	}
