@@ -3,6 +3,7 @@ package controllers
 import (
 	"net"
 	"net/http"
+	"net/smtp"
 	"strconv"
 	"strings"
 	"time"
@@ -67,8 +68,11 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 	succesfull := 0
 	failed := 0
 	now := time.Now()
+	var resp models.Response_API
+	var Responses_success []models.Response_API
+	var Responses_failed []models.Response_API
 	for x, y := range payload.Create_server {
-		var new_server models.Server
+
 		newServer := models.Server{
 			Server_id:    y.Server_id,
 			Server_name:  y.Server_name,
@@ -78,21 +82,31 @@ func (sc *Server_controller) CreatemanyServer(ctx *gin.Context) {
 			Last_updated: now,
 			Ipv4:         y.Ipv4,
 		}
-		new_server = newServer
+
 		results := sc.DB.Create(&newServer)
 		if results.Error != nil {
 			if strings.Contains(results.Error.Error(), "duplicate key") {
 				failed++
-				ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "number": x + 1, "message": results.Error.Error()})
+				resp.Status = "500"
+				resp.Number = x + 1
+				resp.Server_ID = newServer.Server_id
+				Responses_failed = append(Responses_failed, resp)
+				// ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "number": x + 1, "message": results.Error.Error()})
 				continue
 			}
 			continue
+		} else {
+			succesfull++
+			resp.Status = "200"
+			resp.Number = x + 1
+			resp.Server_ID = newServer.Server_id
+			Responses_success = append(Responses_success, resp)
 		}
-		succesfull++
-		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number": x + 1, "data": new_server})
+
+		// ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number": x + 1, "data": new_server})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"successful": succesfull, "failed": failed}})
+	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"successful": succesfull, "failed": failed, "List of successful": Responses_success, "List of failed": Responses_failed}})
 
 }
 
@@ -256,6 +270,7 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 	}
 	// log.Println(file.Filename)
 	var server models.Server
+
 	server.User_id = currentUser.User_id
 	f, err := excelize.OpenFile(file.Filename)
 	if err != nil {
@@ -269,6 +284,9 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 	succesfull := 0
 	x := 0
 	now := time.Now()
+	var resp models.Response_API
+	var Responses_success []models.Response_API
+	var Responses_failed []models.Response_API
 	for row.Next() {
 		for i, value := range row.Columns() {
 			if i == 0 {
@@ -292,15 +310,26 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 		if results.Error != nil {
 			if strings.Contains(results.Error.Error(), "duplicate key") {
 				failed++
-				ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "number": x, "message": results.Error.Error()})
+				resp.Status = "500"
+				resp.Number = x
+				resp.Server_ID = server.Server_id
+				Responses_failed = append(Responses_failed, resp)
+				// ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "number": x + 1, "message": results.Error.Error()})
 				continue
 			}
 			continue
+		} else {
+			succesfull++
+			resp.Status = "200"
+			resp.Number = x
+			resp.Server_ID = server.Server_id
+			Responses_success = append(Responses_success, resp)
 		}
-		succesfull++
-		ctx.JSON(http.StatusOK, gin.H{"status": "success", "number": x, "data": server})
+
+		// ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number": x + 1, "data": new_server})
 	}
-	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"success": succesfull, "fail": failed}})
+
+	ctx.JSON(http.StatusOK, gin.H{"result": gin.H{"successful": succesfull, "failed": failed, "List of successful": Responses_success, "List of failed": Responses_failed}})
 }
 
 func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
@@ -345,6 +374,41 @@ func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 
 		}
 	}
+}
+
+func (sc *Server_controller) Daily_return(ctx *gin.Context) {
+	var servers []models.Server
+	sc.DB.Offset(0).Find(&servers)
+
+	from := "vtmhieu111@gmail.com"
+	password := "sducehbiurfbsszu"
+
+	toEmailAddress := "hieu.vtm193218@sis.hust.edu.vn"
+	to := []string{toEmailAddress}
+
+	host := "smtp.gmail.com"
+	port := "587"
+	address := host + ":" + port
+
+	subject := "Subject: Daily update status\n"
+	var body string
+	body = "This is the status of server today:\n"
+	var mess string
+	for _, server := range servers {
+		mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
+		body += mess
+	}
+	message := []byte(subject + body)
+
+	auth := smtp.PlainAuth("", from, password, host)
+
+	err := smtp.SendMail(address, auth, from, to, message)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+	}
+
 }
 
 //dial tcp 127.0.0.1:6500:

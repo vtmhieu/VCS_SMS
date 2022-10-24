@@ -44,3 +44,8 @@ type Update_server struct {
 	Last_updated time.Time `json:"last_updated,omitempty"`
 	Ipv4         string    `json:"ipv4,omitempty"`
 }
+type Response_API struct {
+	Status    string `json:"status,omitempty"`
+	Number    int    `json:"number,omitempty"`
+	Server_ID string `json:"server_id,omitempty"`
+}

@@ -3,7 +3,7 @@ package models
 import "time"
 
 type User struct {
-	User_id         string    `gorm:"uniqueIndex;not null;primary key" json:"user_id"` //t de id la minh nhap vao chu k de tu tao
+	User_id         string    `gorm:"uniqueIndex;not null;primary key" json:"user_id"`
 	User_name       string    `gorm:"uniqueIndex;not null" json:"user_name"`
 	User_password   string    ` gorm:"not null" json:"password"`
 	User_email      string    `gorm:"uniqueIndex;not null" json:"email"`

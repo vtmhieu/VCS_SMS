@@ -34,4 +34,5 @@ func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	router.GET("/excel/export", c.servercontroller.Export_Excel)
 	router.POST("/excel/import", c.servercontroller.Post_by_excel)
 	router.GET("/ipv4/check", c.servercontroller.Check_on_off)
+	router.POST("/dailyreturn/sendemail", c.servercontroller.Daily_return)
 }
