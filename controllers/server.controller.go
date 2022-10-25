@@ -426,33 +426,36 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 		from := "vtmhieu111@gmail.com"
 		password := "sducehbiurfbsszu"
 
-		toEmailAddress := payload.Email
-		to := []string{toEmailAddress}
+		toEmailAddress := payload.List_Email
+		for _, email := range toEmailAddress {
+			to := []string{email}
 
-		host := "smtp.gmail.com"
-		port := "587"
-		address := host + ":" + port
+			host := "smtp.gmail.com"
+			port := "587"
+			address := host + ":" + port
 
-		subject := "Subject: Daily update status\n"
-		var body string
-		body = "This is the status of server today:\n"
-		var mess string
-		for _, server := range servers {
-			mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
-			body += mess
+			subject := "Subject: Daily update status\n"
+			var body string
+			body = "This is the status of server today:\n"
+			var mess string
+			for _, server := range servers {
+				mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
+				body += mess
+			}
+
+			message := []byte(subject + body)
+
+			auth := smtp.PlainAuth("", from, password, host)
+
+			err := smtp.SendMail(address, auth, from, to, message)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+			}
 		}
 
-		message := []byte(subject + body)
-
-		auth := smtp.PlainAuth("", from, password, host)
-
-		err := smtp.SendMail(address, auth, from, to, message)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
-		}
-		time.Sleep(1 * time.Minute)
+		time.Sleep(5 * time.Minute)
 	}
 
 }

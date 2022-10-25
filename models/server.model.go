@@ -51,7 +51,7 @@ type Response_API struct {
 }
 
 type Daily_API struct {
-	Start string `json:"start,omitempty"`
-	End   string `json:"end,omitempty"`
-	Email string `json:"email,omitempty"`
+	Start      string   `json:"start,omitempty"`
+	End        string   `json:"end,omitempty"`
+	List_Email []string `json:"list_email,omitempty"`
 }
