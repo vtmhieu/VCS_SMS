@@ -392,42 +392,65 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 		return
 	}
 
-	var servers []models.Server
-	sc.DB.Offset(0).Find(&servers)
-
-	from := "vtmhieu111@gmail.com"
-	password := "sducehbiurfbsszu"
-
-	toEmailAddress := payload.Email
-	to := []string{toEmailAddress}
-
-	host := "smtp.gmail.com"
-	port := "587"
-	address := host + ":" + port
-
-	subject := "Subject: Daily update status\n"
-	var body string
-	body = "This is the status of server today:\n"
-	var mess string
-	for _, server := range servers {
-		mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
-		body += mess
-	}
-	message := []byte(subject + body)
-
-	auth := smtp.PlainAuth("", from, password, host)
-
-	err := smtp.SendMail(address, auth, from, to, message)
+	start := payload.Start
+	end := payload.End
+	time1, err := time.ParseInLocation("2006-01-02", start, time.Local)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
-	} else {
-		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+		ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "message": "Could not parse time"})
 	}
-	// start := payload.Start
-	// end := payload.End
+
+	time2, err := time.ParseInLocation("2006-01-02", end, time.Local)
+	if err != nil {
+		ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "message": "Could not parse time"})
+	}
+	now := time.Now()
+	// duration2 := time2.Sub(now)
+	duration1 := time1.Sub(now)
+	// duration3 := time2.Sub(time1)
+
+	if !time1.Before(time2) {
+		ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "message": "The end day must be after the start day"})
+		return
+	}
 	// t:= time.Duration(end-start)
-	time.Sleep(1 * time.Minute)
-	sc.Daily_return(ctx)
+
+	//cho den khi chay
+	time.Sleep(1 * duration1)
+
+	for duration := true; duration; duration = (now.Before(time2)) {
+		var servers []models.Server
+		sc.DB.Offset(0).Find(&servers)
+
+		from := "vtmhieu111@gmail.com"
+		password := "sducehbiurfbsszu"
+
+		toEmailAddress := payload.Email
+		to := []string{toEmailAddress}
+
+		host := "smtp.gmail.com"
+		port := "587"
+		address := host + ":" + port
+
+		subject := "Subject: Daily update status\n"
+		var body string
+		body = "This is the status of server today:\n"
+		var mess string
+		for _, server := range servers {
+			mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
+			body += mess
+		}
+		message := []byte(subject + body)
+
+		auth := smtp.PlainAuth("", from, password, host)
+
+		err := smtp.SendMail(address, auth, from, to, message)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+		}
+		time.Sleep(24 * time.Hour)
+	}
 
 }
 
