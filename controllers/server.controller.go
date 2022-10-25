@@ -397,11 +397,13 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 	time1, err := time.ParseInLocation("2006-01-02", start, time.Local)
 	if err != nil {
 		ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "message": "Could not parse time"})
+		return
 	}
 
 	time2, err := time.ParseInLocation("2006-01-02", end, time.Local)
 	if err != nil {
 		ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "message": "Could not parse time"})
+		return
 	}
 	now := time.Now()
 	// duration2 := time2.Sub(now)
@@ -439,6 +441,7 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 			mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
 			body += mess
 		}
+
 		message := []byte(subject + body)
 
 		auth := smtp.PlainAuth("", from, password, host)
@@ -449,7 +452,7 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 		}
-		time.Sleep(24 * time.Hour)
+		time.Sleep(1 * time.Minute)
 	}
 
 }
