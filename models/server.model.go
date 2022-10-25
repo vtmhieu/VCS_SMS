@@ -49,3 +49,9 @@ type Response_API struct {
 	Number    int    `json:"number,omitempty"`
 	Server_ID string `json:"server_id,omitempty"`
 }
+
+type Daily_API struct {
+	Start time.Time `json:"start,omitempty"`
+	End   time.Time `json:"end,omitempty"`
+	Email string    `json:"email,omitempty"`
+}

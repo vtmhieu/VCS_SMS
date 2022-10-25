@@ -255,11 +255,19 @@ func (sc *Server_controller) Export_Excel(ctx *gin.Context) {
 	}
 	f.SetActiveSheet(index)
 	// Save xlsx file by the given path.
-	if err := f.SaveAs("Server.xlsx"); err != nil {
+	if err := f.SaveAs("New Server.xlsx"); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "file has been created successfully"})
+
+	// file, _ := ctx.FormFile("New Server.xlsx")
+	// log.Println(file.Filename)
+
+	// // Upload the file to specific dst.
+	// ctx.SaveUploadedFile(file, "./assets/upload/"+uuid.New().String()+filepath.Ext(file.Filename))
+
+	// ctx.JSON(http.StatusOK, gin.H("'%s' uploaded!", file.Filename))
 }
 
 func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
@@ -377,13 +385,20 @@ func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 }
 
 func (sc *Server_controller) Daily_return(ctx *gin.Context) {
+	var payload *models.Daily_API
+	//check JSON input
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
 	var servers []models.Server
 	sc.DB.Offset(0).Find(&servers)
 
 	from := "vtmhieu111@gmail.com"
 	password := "sducehbiurfbsszu"
 
-	toEmailAddress := "hieu.vtm193218@sis.hust.edu.vn"
+	toEmailAddress := payload.Email
 	to := []string{toEmailAddress}
 
 	host := "smtp.gmail.com"
@@ -408,6 +423,11 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 	}
+	// start := payload.Start
+	// end := payload.End
+	// t:= time.Duration(end-start)
+	time.Sleep(1 * time.Minute)
+	sc.Daily_return(ctx)
 
 }
 
