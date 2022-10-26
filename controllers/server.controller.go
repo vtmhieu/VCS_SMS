@@ -435,14 +435,23 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 			address := host + ":" + port
 
 			subject := "Subject: Daily update status\n"
-			var body string
-			body = "This is the status of server today:\n"
+			body := "This is the status of server today:\n"
 			var mess string
+			online := 0
+			offline := 0
 			for _, server := range servers {
-				mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
-				body += mess
+				// mess = "server id: " + server.Server_id + "\n" + "server status: " + server.Status + "\n\n"
+				if strings.ToLower(server.Status) == "online" {
+					online++
+				} else if strings.ToLower(server.Status) == "offline" {
+					offline++
+				} else {
+					continue
+				}
 			}
 
+			mess = "\nThe number of servers is: " + strconv.Itoa(len(servers)) + "\n" + "The number of Online servers is: " + strconv.Itoa(online) + "\n" + "The number of Offline servers is: " + strconv.Itoa(offline)
+			body += mess
 			message := []byte(subject + body)
 
 			auth := smtp.PlainAuth("", from, password, host)
