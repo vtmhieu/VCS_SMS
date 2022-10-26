@@ -260,11 +260,37 @@ func (sc *Server_controller) Export_Excel(ctx *gin.Context) {
 	f := excelize.NewFile()
 	// Create a new sheet.
 	index := f.NewSheet("Sheet1")
+	//sort and filter
+	var from = ctx.DefaultQuery("from", "1")
+	var to = ctx.DefaultQuery("to", "10000")
+	var sort = ctx.DefaultQuery("sort", "")
+	var type_sort = ctx.DefaultQuery("type", "")
 
-	// Set value of a cell.
+	int_from, _ := strconv.Atoi(from)
+	int_to, _ := strconv.Atoi(to)
 	var Servers []models.Server
-	//get servers from DB
-	sc.DB.Offset(0).Find(&Servers)
+	if sort != "" {
+		if type_sort == "desc" {
+			results := sc.DB.Offset(int_from - 1).Order(sort + " DESC").Limit(int_to - int_from + 1).Find(&Servers)
+			if results.Error != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
+				return
+			}
+		} else if type_sort == "asc" {
+			results := sc.DB.Offset(int_from - 1).Order(sort + " ASC").Limit(int_to - int_from + 1).Find(&Servers)
+			if results.Error != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
+				return
+			}
+		}
+	} else {
+		results := sc.DB.Offset(int_from - 1).Limit(int_to - int_from + 1).Find(&Servers)
+
+		if results.Error != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
+			return
+		}
+	}
 	for i, c := range Servers {
 		f.SetCellValue("Sheet1", "A"+strconv.Itoa(i+1), c.Server_id)
 		f.SetCellValue("Sheet1", "B"+strconv.Itoa(i+1), c.Server_name)
