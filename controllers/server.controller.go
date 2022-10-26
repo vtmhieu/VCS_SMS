@@ -189,14 +189,16 @@ func (sc *Server_controller) GetAllServer(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number of servers": len(Servers), "data": Servers})
 		}
 
-	}
-	results := sc.DB.Offset(int_from - 1).Limit(int_to - int_from + 1).Find(&Servers)
+	} else {
+		results := sc.DB.Offset(int_from - 1).Limit(int_to - int_from + 1).Find(&Servers)
 
-	if results.Error != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
-		return
+		if results.Error != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number of servers": len(Servers), "data": Servers})
+
 	}
-	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number of servers": len(Servers), "data": Servers})
 
 }
 
