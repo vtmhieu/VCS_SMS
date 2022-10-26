@@ -31,7 +31,7 @@ func (c *Server_Route_Controller) Server_Route(rg *gin.RouterGroup) {
 	router.DELETE("/all", c.servercontroller.Delete_all_servers)
 	router.POST("/all", c.servercontroller.CreatemanyServer)
 	router.GET("/ipv4/:ipv4", c.servercontroller.Check)
-	router.GET("/excel/export", c.servercontroller.Export_Excel)
+	router.GET("/excel/export/", c.servercontroller.Export_Excel)
 	router.POST("/excel/import", c.servercontroller.Post_by_excel)
 	router.GET("/ipv4/check", c.servercontroller.Check_on_off)
 	router.POST("/dailyreturn/sendemail", c.servercontroller.Daily_return)
