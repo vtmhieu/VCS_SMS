@@ -291,14 +291,20 @@ func (sc *Server_controller) Export_Excel(ctx *gin.Context) {
 			return
 		}
 	}
+	f.SetCellValue("Sheet1", "A1", "Server ID")
+	f.SetCellValue("Sheet1", "B1", "Server Name")
+	f.SetCellValue("Sheet1", "C1", "Status")
+	f.SetCellValue("Sheet1", "D1", "Created Time")
+	f.SetCellValue("Sheet1", "E1", "Updated Time")
+	f.SetCellValue("Sheet1", "F1", "Ipv4")
+
 	for i, c := range Servers {
 		f.SetCellValue("Sheet1", "A"+strconv.Itoa(i+1), c.Server_id)
 		f.SetCellValue("Sheet1", "B"+strconv.Itoa(i+1), c.Server_name)
 		f.SetCellValue("Sheet1", "C"+strconv.Itoa(i+1), c.Status)
-		f.SetCellValue("Sheet1", "D"+strconv.Itoa(i+1), c.User_id)
-		f.SetCellValue("Sheet1", "E"+strconv.Itoa(i+1), c.Created_time)
-		f.SetCellValue("Sheet1", "F"+strconv.Itoa(i+1), c.Last_updated)
-		f.SetCellValue("Sheet1", "G"+strconv.Itoa(i+1), c.Ipv4)
+		f.SetCellValue("Sheet1", "D"+strconv.Itoa(i+1), c.Created_time)
+		f.SetCellValue("Sheet1", "E"+strconv.Itoa(i+1), c.Last_updated)
+		f.SetCellValue("Sheet1", "F"+strconv.Itoa(i+1), c.Ipv4)
 		// Set active sheet of the workbook.
 	}
 	f.SetActiveSheet(index)
