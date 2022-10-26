@@ -166,11 +166,30 @@ func (sc *Server_controller) GetServer(ctx *gin.Context) {
 func (sc *Server_controller) GetAllServer(ctx *gin.Context) {
 	var from = ctx.DefaultQuery("from", "1")
 	var to = ctx.DefaultQuery("to", "10000")
+	var sort = ctx.DefaultQuery("sort", "")
+	var type_sort = ctx.DefaultQuery("type", "")
 
 	int_from, _ := strconv.Atoi(from)
 	int_to, _ := strconv.Atoi(to)
 	var Servers []models.Server
+	if sort != "" {
+		if type_sort == "desc" {
+			results := sc.DB.Offset(int_from - 1).Order(sort + " DESC").Limit(int_to - int_from + 1).Find(&Servers)
+			if results.Error != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number of servers": len(Servers), "data": Servers})
+		} else if type_sort == "asc" {
+			results := sc.DB.Offset(int_from - 1).Order(sort + " ASC").Limit(int_to - int_from + 1).Find(&Servers)
+			if results.Error != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "no connection"})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number of servers": len(Servers), "data": Servers})
+		}
 
+	}
 	results := sc.DB.Offset(int_from - 1).Limit(int_to - int_from + 1).Find(&Servers)
 
 	if results.Error != nil {
@@ -178,6 +197,7 @@ func (sc *Server_controller) GetAllServer(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "number of servers": len(Servers), "data": Servers})
+
 }
 
 //delete server
