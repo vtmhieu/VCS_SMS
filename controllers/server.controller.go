@@ -439,6 +439,7 @@ func (sc *Server_controller) Check_on_off(ctx *gin.Context) {
 }
 
 func (sc *Server_controller) Daily_return(ctx *gin.Context) {
+
 	var payload *models.Daily_API
 	//check JSON input
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
@@ -467,12 +468,16 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 	if !time1.Before(time2) {
 		ctx.JSON(http.StatusConflict, gin.H{"status": http.StatusConflict, "message": "The end day must be after the start day"})
 		return
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "The request has been sent successfully"})
+
+		sc.sendemail(ctx, duration1, time2, payload.List_Email)
 	}
-	// t:= time.Duration(end-start)
+}
 
-	//cho den khi chay
+func (sc *Server_controller) sendemail(ctx *gin.Context, duration1 time.Duration, time2 time.Time, list_email []string) {
 	time.Sleep(1 * duration1)
-
+	now := time.Now()
 	for duration := true; duration; duration = (now.Before(time2)) {
 		var servers []models.Server
 		sc.DB.Offset(0).Find(&servers)
@@ -480,7 +485,7 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 		from := "vtmhieu111@gmail.com"
 		password := "sducehbiurfbsszu"
 
-		toEmailAddress := payload.List_Email
+		toEmailAddress := list_email
 		for _, email := range toEmailAddress {
 			to := []string{email}
 
@@ -512,15 +517,12 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 
 			err := smtp.SendMail(address, auth, from, to, message)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
-			} else {
-				ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+				ctx.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": "something went wrong"})
+				return
 			}
 		}
-
-		time.Sleep(5 * time.Minute)
+		time.Sleep(30 * time.Minute)
 	}
-
 }
 
 //dial tcp 127.0.0.1:6500:
