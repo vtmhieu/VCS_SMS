@@ -8,7 +8,7 @@ import (
 	"github.com/vtmhieu/VCS_SMS/models"
 )
 
-// we loaded the environment variables and created a connection pool to the Postgres database in the init() function
+// loaded the environment variables and created a connection pool to the Postgres database in the init() function
 func init() {
 	config, err := initializers.LoadConfig(".")
 	if err != nil {
@@ -18,7 +18,7 @@ func init() {
 	initializers.ConnectDB(&config)
 }
 
-//Then, we evoked the AutoMigrate() function provided by GORM to create the database migration and push the changes to the database.
+//Then, evoked the AutoMigrate() function provided by GORM to create the database migration and push the changes to the database.
 
 func main() {
 	initializers.DB.AutoMigrate(&models.Server{}, &models.User{})
