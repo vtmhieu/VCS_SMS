@@ -361,7 +361,7 @@ func (sc *Server_controller) Post_by_excel(ctx *gin.Context) {
 				server.Created_time = now
 			} else if i == 5 {
 				server.Last_updated = now
-			} else if i == 6 {
+			} else if i == 3 {
 				server.Ipv4 = value
 			} else {
 				continue
@@ -471,7 +471,7 @@ func (sc *Server_controller) Daily_return(ctx *gin.Context) {
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "The request has been sent successfully"})
 
-		sc.sendemail(ctx, duration1, time2, payload.List_Email)
+		go sc.sendemail(ctx, duration1, time2, payload.List_Email)
 	}
 }
 
