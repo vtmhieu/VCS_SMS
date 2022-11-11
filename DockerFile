@@ -1,0 +1,13 @@
+FROM golang:1.19-alphine3.16
+FROM ubuntu:20.04
+
+RUN apt update
+RUN apt install -y build-essential
+
+WORKDIR /app
+COPY . . 
+RUN go build -o main.go 
+
+EXPOSE 8000
+
+CMD ["./run/app/main"]

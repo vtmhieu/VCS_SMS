@@ -8,6 +8,15 @@ services:
       - ./app.env
     volumes:
       - postgres-redis:/var/lib/postgresql_redis/data
+  backend:
+    image: hieuvtm/backed_VCS_SMS:latest
+    environment:
+      DB_USER: postgres 
+      DB_PASS: password123
+      DB: VCS_SMS 
+      DB_HOST: postgres-redis 
+    links:
+      - postgres-redis #cho phep service DB va service backend
+
 volumes:
-  postgres-redis:
 
