@@ -9,9 +9,9 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 COPY . /app 
-RUN go build -o /VCS_SMS/migrate/migrate.go
-RUN go build -o /VCS_SMS
+
+RUN go build -o air /VCS_SMS
 
 EXPOSE 8000
 
-CMD ["/VCS_SMS/migrate/migrate.go","/VCS_SMS"]
+CMD ["./air"]
