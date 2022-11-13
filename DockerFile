@@ -1,17 +1,41 @@
 FROM ubuntu:20.04
-FROM golang:1.19-alphine3.16
+FROM golang:alpine as builder
+
+#install git
+RUN apk update && apk add --no-cache git 
+
 
 ENV GOPROXY="https://proxy.golang.org,direct"
 ENV GIN_MODE=release
 
+
+#set up working directory
 WORKDIR /app
 
+#copy go.mod and go.sum files 
 COPY go.mod go.sum ./
-RUN go mod download && go mod verify
-COPY . /app 
 
-RUN go build -o air /VCS_SMS
+#Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed
+RUN go mod download
 
+#copy the source from the current directory to the working directory inside the container
+COPY . .
+
+#Build application
+RUN CGO_ENABLE=0 GOOS=linux go build -o main .
+
+#Run Stage
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+#Copy the Pre-built binary file from the previuos stage. Observe we also copied the app.env file
+COPY --from=builder /app/main .
+COPY --from=builder /app/app.env .
+
+#port
 EXPOSE 8000
 
+#command to run the excutable
 CMD ["./air"]
